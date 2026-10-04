@@ -2,7 +2,7 @@
 
 A property-aware maintenance application for tenants, managers, and technicians. Managers manage their own properties, units, and tenant assignments. Tickets move from OPEN to ASSIGNED to IN_PROGRESS to DONE; role restrictions and private attachments remain enforced.
 
-[Live FixNest application](https://app-production-e601.up.railway.app) · [Production verification](RAILWAY-VERIFICATION.md).
+[Live FixNest application](https://fixnest.up.railway.app) · [Production verification](RAILWAY-VERIFICATION.md).
 
 ## Requirements
 
