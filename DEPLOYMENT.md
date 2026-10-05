@@ -10,7 +10,7 @@ Never seed/reset production or run the local integration scripts against it.
 
 ## Exact dashboard checklist
 
-1. Sign in to Railway with GitHub access to `shashwatmishra18/proptech-maintenance`.
+1. Sign in to Railway with GitHub access to `shashwatmishra18/FixNest`.
    Inspect the intended project first and reuse existing services/volumes. If new,
    deploy this GitHub repository, branch `main`, naming the service `app`. Hold
    automatic deployment until configuration is complete.

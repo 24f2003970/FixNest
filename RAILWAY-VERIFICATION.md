@@ -7,8 +7,8 @@ One project, `FixNest`, contains the GitHub-backed `app` service and private
 SSL-enabled PostgreSQL 18 service `Postgres`. The application runs one replica,
 with its private `app-volume` mounted at `/app/storage`. There is no public
 database TCP proxy. The deployed application commit is `e7e3b6f`, built from
-`shashwatmishra18/proptech-maintenance`, branch `main`; its
-[hosted verification workflow passed](https://github.com/shashwatmishra18/proptech-maintenance/actions/runs/37063011706).
+`shashwatmishra18/FixNest`, branch `main`; its
+[hosted verification workflow passed](https://github.com/shashwatmishra18/FixNest/actions/runs/37063011706).
 Wait for CI is enabled for automatic GitHub deployments.
 
 Production deployment `938d75b1-e7ee-4d05-a3d8-608e3d1e1608` succeeded.
