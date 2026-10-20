@@ -160,3 +160,52 @@ test('role-specific filters restore URL values after authorized choices load', (
     loading = false; assert.notEqual(field('MANAGER').key, before); assert.equal(field('MANAGER').props.defaultValue, 'own-property'); assert.match(text(field('MANAGER')), /Own Property/);
     assert.equal(nodes(component({ role: 'TECHNICIAN' })).find(n => n.props?.id === 'ticket-assignee'), undefined);
 });
+
+test('workspace navigation exposes only existing role routes and identifies ticket/property detail sections', () => {
+    for (const [role, pathname] of [['MANAGER', '/manager/properties/property-id'], ['TENANT', '/tickets/ticket-id'], ['TECHNICIAN', '/tech/tickets/ticket-id']]) {
+        const shell = load('src/components/ApplicationShell.tsx', {
+            react: { ...require('react'), useState: initial => [initial, () => {}], useRef: () => ({ current: null }), useEffect() {} },
+            'next/link': 'a', 'next/navigation': { usePathname: () => pathname },
+            '@/hooks/use-resource': { useResource: () => ({ data: { name: 'QA Account' } }) },
+            './NotificationBell': { NotificationBell: 'notifications' }, './LogoutButton': { LogoutButton: 'logout' },
+            './ui/dialog': { Dialog: 'dialog', DialogContent: 'dialog-content', DialogTitle: 'dialog-title', DialogDescription: 'dialog-description', DialogTrigger: 'dialog-trigger' },
+            './ui/button': { Button: 'button' },
+        }).ApplicationShell;
+        const tree = shell({ role, children: 'Content' }), links = nodes(tree).filter(node => node.type === 'a');
+        const hrefs = links.map(node => node.props.href);
+        assert.equal(hrefs.includes('/manager/staff'), role === 'MANAGER');
+        assert.equal(hrefs.includes('/manager/properties'), role === 'MANAGER');
+        assert.equal(hrefs.includes('/tickets/new'), role === 'TENANT');
+        assert.equal(hrefs.includes('/dashboard#your-home'), role === 'TENANT');
+        assert.ok(links.some(node => node.props['aria-current'] === 'page'));
+        assert.equal(nodes(tree).filter(node => node.type === 'main').length, 1);
+        assert.equal(nodes(tree).find(node => node.type === 'main').props.id, 'main-content');
+        assert.ok(nodes(tree).some(node => node.props?.['aria-label'] === 'Open navigation'));
+    }
+});
+
+test('sidebar anchor selection distinguishes home, requests and overview without multiple active destinations', () => {
+    for (const [role, hash, expected] of [
+        ['TENANT', '#your-home', '/dashboard#your-home'],
+        ['TENANT', '#ticket-list-heading', '/dashboard#ticket-list-heading'],
+        ['TENANT', '', '/dashboard'],
+        ['TENANT', '#unrelated', '/dashboard'],
+        ['TECHNICIAN', '#ticket-list-heading', '/tech/dashboard#ticket-list-heading'],
+        ['MANAGER', '#ticket-list-heading', '/manager/dashboard#ticket-list-heading'],
+    ]) {
+        const pathname = role === 'MANAGER' ? '/manager/dashboard' : role === 'TECHNICIAN' ? '/tech/dashboard' : '/dashboard';
+        const updates = [];
+        const shell = load('src/components/ApplicationShell.tsx', {
+            react: { ...require('react'), useState: initial => [typeof initial === 'string' ? hash : initial, value => updates.push(value)], useRef: () => ({ current: null }), useEffect() {} },
+            'next/link': 'a', 'next/navigation': { usePathname: () => pathname },
+            '@/hooks/use-resource': { useResource: () => ({ data: { name: 'QA Account' } }) },
+            './NotificationBell': { NotificationBell: 'notifications' }, './LogoutButton': { LogoutButton: 'logout' },
+            './ui/dialog': { Dialog: 'dialog', DialogContent: 'dialog-content', DialogTitle: 'dialog-title', DialogDescription: 'dialog-description', DialogTrigger: 'dialog-trigger' },
+            './ui/button': { Button: 'button' },
+        }).ApplicationShell;
+        const links = nodes(shell({ role, children: 'Content' })).filter(n => n.type === 'a');
+        assert.deepEqual([...new Set(links.filter(n => n.props['aria-current'] === 'page').map(n => n.props.href))], [expected]);
+        links.find(n => n.props.href === pathname + '#ticket-list-heading').props.onClick();
+        assert.deepEqual(updates.slice(-2), ['#ticket-list-heading', false]);
+    }
+});

@@ -73,13 +73,13 @@ export function NotificationBell() {
                 <Button variant="ghost" size="icon" className="relative" aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}>
                     <Bell aria-hidden="true" className="h-5 w-5" />
                     {unreadCount > 0 && (
-                        <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-600 text-white text-[10px] flex items-center justify-center font-bold">
+                        <span className="absolute top-0 right-0 min-h-4 min-w-4 px-1 rounded-full bg-teal-800 text-white text-[10px] flex items-center justify-center font-bold">
                             {unreadCount > 99 ? '99+' : unreadCount}
                         </span>
                     )}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)]">
+            <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)] p-0 shadow-lg">
                 <div className="flex bg-slate-50 items-center justify-between px-4 py-2 border-b">
                     <span className="font-semibold text-sm">Notifications</span>
                 </div>
@@ -90,13 +90,13 @@ export function NotificationBell() {
                         <div className="p-4 text-center text-sm text-slate-500">No recent notifications</div>
                     ) : (
                         notifications.map(n => {
-                            const content = <><span className={"text-sm break-words [overflow-wrap:anywhere] " + (!n.read ? 'font-medium text-slate-900' : 'text-slate-600')}>{n.message}</span><span className="text-xs text-blue-700">{n.read ? 'Read' : 'Unread'}</span><time className="text-xs text-slate-600" dateTime={n.createdAt}>{new Date(n.createdAt).toLocaleString()}</time>{n.ticketHref && <span className="text-sm font-medium text-blue-700">View ticket →</span>}</>;
+                            const content = <><span className={"text-sm break-words [overflow-wrap:anywhere] " + (!n.read ? 'font-medium text-slate-900' : 'text-slate-600')}>{n.message}</span><span className="text-xs text-teal-800">{n.read ? 'Read' : 'Unread'}</span><time className="text-xs text-slate-600" dateTime={n.createdAt}>{new Date(n.createdAt).toLocaleString()}</time>{n.ticketHref && <span className="text-sm font-medium text-teal-800">View ticket →</span>}</>;
                             const style = 'p-4 focus:bg-slate-50 border-b last:border-0 flex flex-col items-start gap-1';
                             return n.ticketHref ? <DropdownMenuItem key={n.id} asChild><Link href={n.ticketHref} className={style} onClick={() => setOpen(false)}>{content}</Link></DropdownMenuItem> : <DropdownMenuItem key={n.id} className={style}>{content}</DropdownMenuItem>;
                         })
                     )}
                 </div>
-                <div className="border-t p-2"><DropdownMenuItem asChild><Link href="/notifications" className="flex min-h-11 items-center justify-center rounded-md text-sm font-semibold text-blue-700 hover:bg-blue-50" onClick={() => setOpen(false)}>View all notifications</Link></DropdownMenuItem></div>
+                <div className="border-t p-2"><DropdownMenuItem asChild><Link href="/notifications" className="flex min-h-11 items-center justify-center rounded-md text-sm font-semibold text-teal-800 hover:bg-teal-50" onClick={() => setOpen(false)}>View all notifications</Link></DropdownMenuItem></div>
             </DropdownMenuContent>
         </DropdownMenu>
     );

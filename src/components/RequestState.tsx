@@ -1,8 +1,9 @@
 import { Button } from './ui/button';
+import { LoaderCircle } from 'lucide-react';
 import { RequestError } from '@/lib/client-request';
 
 export function LoadingState({ label }: { label: string }) {
-    return <div role="status" className="rounded-lg border bg-white p-8 text-center text-slate-600 min-h-32">{label}</div>;
+    return <div role="status" className="rounded-lg border bg-white p-6 text-sm text-slate-600 min-h-24 flex items-center justify-center gap-3"><LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin text-teal-700" />{label}</div>;
 }
 
 export function ErrorState({ error, retry, label = 'Could not load this information', entity = 'ticket' }: { error: unknown; retry: () => void; label?: string; entity?: string }) {

@@ -120,7 +120,7 @@ test('Staff exposes the exact fallback warning, copy/hide controls and revoke fo
       '@/hooks/use-resource': { useResource: () => ({ loading: false, data: { technicians: [], invitations: [{ id: 'invite', email: input.email, expiresAt: '1970-01-01', usedAt: null, revokedAt: null }] }, reload: async () => {} }) },
       '@/hooks/use-mutation': { useMutation: () => ({ pending: false, run: action => { lastAction = action(); return lastAction; } }) },
       '@/lib/client-request': { requestData: async (route, options) => { requests.push({ route, options }); return { url, delivery: 'unconfigured' }; } },
-      './RequestState': { LoadingState: 'loading', ErrorState: 'error' }, './ui/button': { Button: 'button' }, './ui/input': { Input: 'input' }, './ui/label': { Label: 'label' },
+      './StateBadge': { StateBadge: 'badge' }, './RequestState': { LoadingState: 'loading', ErrorState: 'error' }, './ui/button': { Button: 'button' }, './ui/input': { Input: 'input' }, './ui/label': { Label: 'label' },
     }).StaffManagement;
     const nodes = element => !element || typeof element !== 'object' ? [] : [element, ...[element.props?.children].flat(Infinity).flatMap(nodes)];
     const text = element => element == null || typeof element === 'boolean' ? '' : typeof element !== 'object' ? String(element) : [element.props?.children].flat(Infinity).map(text).join(' ');

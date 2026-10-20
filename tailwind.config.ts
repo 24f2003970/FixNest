@@ -10,6 +10,10 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+            slate: { 50: '#f7f7f0', 100: '#eeefe5', 200: '#dce0d1', 300: '#c7cdba', 400: '#88957a', 500: '#5e6b53', 600: '#57634e', 700: '#43533e', 800: '#324631', 900: '#243e32', 950: '#1c3227' },
+            teal: { 50: '#f0f4e8', 100: '#e5ecd8', 200: '#cedcba', 300: '#b4c69a', 400: '#90ac73', 500: '#6c8b53', 600: '#52713f', 700: '#3d623f', 800: '#305137', 900: '#243e2b', 950: '#172c20' },
+            blue: { 50: '#f3f0e6', 100: '#eae4d2', 200: '#d5c8a0', 800: '#725b2e' },
+
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

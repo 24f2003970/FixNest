@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
+import { AuthFrame } from '@/components/AuthFrame';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,13 +31,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-[80vh]">
-            <Card className="w-full max-w-sm">
-                <CardHeader>
-                    <h1 className="text-2xl font-semibold">Login</h1>
-                    <CardDescription>Sign in to your FixNest account.</CardDescription>
-                </CardHeader>
-                <CardContent>
+        <AuthFrame title="Welcome back" description="Sign in to your FixNest account.">
                     <form aria-busy={pending} onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="login-email">Email</Label>
@@ -48,9 +42,7 @@ export default function Login() {
                             <Input type="password" id="login-password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
                         </div>
                         <Button type="submit" disabled={pending} className="w-full">{pending ? "Signing in…" : "Sign in"}</Button>
-                    </form><a href="/forgot-password" className="inline-flex min-h-11 items-center text-blue-700 underline">Forgot password?</a><p className="mt-5 text-sm text-slate-600">New tenant? <a className="text-blue-700 underline" href="/register">Create an account</a></p>
-                </CardContent>
-            </Card>
-        </div>
+                    </form><a href="/forgot-password" className="inline-flex min-h-11 items-center text-teal-800 underline">Forgot password?</a><p className="mt-5 text-sm text-slate-600">New tenant? <a className="text-teal-800 underline" href="/register">Create an account</a></p>
+        </AuthFrame>
     );
 }

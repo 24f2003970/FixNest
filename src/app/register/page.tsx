@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
+import { AuthFrame } from '@/components/AuthFrame';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,13 +31,7 @@ export default function Register() {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-[80vh]">
-            <Card className="w-full max-w-sm">
-                <CardHeader>
-                    <h1 className="text-2xl font-semibold">Register</h1>
-                    <CardDescription>Create a FixNest tenant account to report maintenance issues.</CardDescription>
-                </CardHeader>
-                <CardContent>
+        <AuthFrame title="Create your tenant account" description="Create a FixNest tenant account to report maintenance issues.">
                     <form aria-busy={pending} onSubmit={handleRegister} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="register-name">Name</Label>
@@ -52,9 +46,7 @@ export default function Register() {
                             <Input type="password" id="register-password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} required minLength={10} />
                         </div>
                         <Button type="submit" disabled={pending} className="w-full">{pending ? "Creating account…" : "Create account"}</Button>
-                    </form><p className="mt-3 text-sm text-slate-600">Passwords need 10 characters and at most 72 UTF-8 bytes.</p><p className="mt-5 text-sm text-slate-600">Already registered? <a className="text-blue-700 underline" href="/login">Sign in</a></p>
-                </CardContent>
-            </Card>
-        </div>
+                    </form><p className="mt-3 text-sm text-slate-600">Passwords need 10 characters and at most 72 UTF-8 bytes.</p><p className="mt-5 text-sm text-slate-600">Already registered? <a className="text-teal-800 underline" href="/login">Sign in</a></p>
+        </AuthFrame>
     );
 }

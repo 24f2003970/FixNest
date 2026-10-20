@@ -76,12 +76,12 @@ export default function NewTicket() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">Report an Issue</h1>
-            {occupancy.loading ? <LoadingState label="Loading your assigned unit…" /> : occupancy.error ? <ErrorState error={occupancy.error} retry={occupancy.reload} label="Could not load your assignment" /> : occupancy.data?.unit ? <p className="break-words">{occupancy.data.unit.property.name} · Unit {occupancy.data.unit.identifier}</p> : <p role="status">Your manager must assign you to a unit before you can submit a maintenance request.</p>}
+        <div className="max-w-5xl mx-auto space-y-6">
+            <header className="page-heading"><div><p className="eyebrow">Your home</p><h1>New maintenance request</h1><p>Tell your property manager what needs attention.</p></div></header>
+            {occupancy.loading ? <LoadingState label="Loading your assigned unit…" /> : occupancy.error ? <ErrorState error={occupancy.error} retry={occupancy.reload} label="Could not load your assignment" /> : occupancy.data?.unit ? <p className="surface border-l-4 border-l-teal-700 p-4 text-sm font-medium">{occupancy.data.unit.property.name} · Unit {occupancy.data.unit.identifier}</p> : <p role="status">Your manager must assign you to a unit before you can submit a maintenance request.</p>}
 
-            <Card>
-                <CardContent className="pt-6">
+            <div className="request-compose"><Card>
+                <CardContent className="pt-6"><div className="compose-step"><span>01 /</span>Tell us what needs attention</div>
                     <form aria-busy={uploading} onSubmit={handleSubmit} className="space-y-4">
                         <fieldset disabled={uploading || occupancy.loading || !!occupancy.error || !occupancy.data?.unit} className="space-y-4">
                         <div className="space-y-2">
@@ -116,12 +116,12 @@ export default function NewTicket() {
                         </div>
 
                         <Button type="submit" disabled={uploading} className="w-full">
-                            {uploading ? 'Submitting...' : 'Submit Ticket'}
+                            {uploading ? 'Submitting...' : 'Submit request'}
                         </Button>
                         </fieldset>
                     </form>
                 </CardContent>
-            </Card>
+            </Card><aside className="compose-guide"><p className="eyebrow">A good request helps</p><h2>The details make<br />the difference.</h2><p>Describe what happened and where. A clear description helps your manager assign the right person.</p><p>Add a photo if it helps explain the problem. Keep personal documents out of images.</p><p>After submitting, follow the request from your dashboard for assignments, notes and status updates.</p></aside></div>
         </div>
     );
 }

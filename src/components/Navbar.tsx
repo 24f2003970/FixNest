@@ -1,40 +1,10 @@
 import Link from 'next/link';
+import { BrandMark } from './Brand';
 import { Button } from './ui/button';
 import { getSession } from '@/lib/auth';
-import { NotificationBell } from './NotificationBell';
-import { LogoutButton } from './LogoutButton';
-import { NavLink } from './NavLink';
-
-export async function Navbar() {
+import { ApplicationShell } from './ApplicationShell';
+export async function Navbar({ children }: { children: React.ReactNode }) {
     const session = await getSession();
-
-    let dashboardPath = '/dashboard';
-    if (session?.role === 'MANAGER') dashboardPath = '/manager/dashboard';
-    if (session?.role === 'TECHNICIAN') dashboardPath = '/tech/dashboard';
-
-    return (
-        <nav aria-label="Main navigation" className="border-b bg-white shadow-sm px-4 sm:px-6 py-3 flex flex-wrap gap-3 items-center justify-between">
-            <Link href={session ? dashboardPath : '/'} className="text-xl font-bold tracking-tight text-blue-600">
-                FixNest
-            </Link>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                {session ? (
-                    <>
-                        <NavLink href={dashboardPath}>Dashboard</NavLink>
-                        {session.role === 'MANAGER' && <NavLink href="/manager/properties">Properties</NavLink>}
-                        {session.role === 'MANAGER' && <NavLink href="/manager/staff">Staff</NavLink>}
-                        <NavLink href="/account">Account</NavLink>
-                        <NotificationBell />
-                        <span className="hidden sm:inline text-sm text-slate-600 capitalize">{session.role.toLowerCase()}</span>
-                        <LogoutButton />
-                    </>
-                ) : (
-                    <>
-                        <Button asChild variant="outline" size="sm"><Link href="/login">Sign in</Link></Button>
-                        <Button asChild size="sm"><Link href="/register">Register</Link></Button>
-                    </>
-                )}
-            </div>
-        </nav>
-    );
+    if (session) return <ApplicationShell role={session.role}>{children}</ApplicationShell>;
+    return <div className="public-shell"><nav aria-label="Main navigation" className="public-nav"><Link href="/" className="wordmark"><BrandMark />FixNest<span className="brand-period">.</span></Link><span className="nav-caption">The everyday, taken care of.</span><div className="flex items-center gap-2 sm:gap-4"><Button asChild variant="ghost" size="sm"><Link href="/login">Sign in</Link></Button><Button asChild size="sm" variant="outline"><Link href="/register">Register</Link></Button></div></nav><main id="main-content" tabIndex={-1} className="public-main">{children}</main></div>;
 }
