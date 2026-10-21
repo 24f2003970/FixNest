@@ -19,6 +19,7 @@ function validateProduction(env = process.env) {
   if (!explicitlyDisabled && (env.EMAIL_PROVIDER !== 'resend' || !env.RESEND_API_KEY || !env.EMAIL_FROM)) failures.push('Resend configuration');
   if (env.STORAGE_BACKEND !== 'persistent' || !env.UPLOAD_ROOT || !isAbsolute(env.UPLOAD_ROOT)) failures.push('persistent UPLOAD_ROOT');
   if (env.DEV_CREDENTIAL_LINKS === '1') failures.push('DEV_CREDENTIAL_LINKS must be disabled');
+  if (Boolean(env.GOOGLE_CLIENT_ID?.trim()) !== Boolean(env.GOOGLE_CLIENT_SECRET?.trim())) failures.push('Google OAuth requires both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
   if (failures.length) throw Error('Invalid production configuration: ' + failures.join(', '));
   return true;
 }

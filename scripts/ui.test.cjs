@@ -85,7 +85,7 @@ test('resource failures exit loading, preserve confirmed data, retry, and ignore
 test('homepage redirects each authenticated role and presents public entry links', async () => {
     let session = null;
     const home = load('src/app/page.tsx', { 'next/link': 'a', '@/components/ui/button': { Button: 'button' }, '@/lib/auth': { getSession: async () => session }, 'next/navigation': { redirect: target => { throw new Error(target); } } }).default;
-    const entry = await home(); assert.match(text(entry), /maintenance|repairs/); assert.deepEqual(nodes(entry).filter(n => n.type === 'a').map(n => n.props.href), ['/login', '/register']);
+    const entry = await home(); assert.match(text(entry), /maintenance|repairs/); assert.deepEqual(nodes(entry).filter(n => n.type === 'a').map(n => n.props.href), ['/login', '/register', '/privacy']);
     for (const [role, target] of [['TENANT', '/dashboard'], ['MANAGER', '/manager/dashboard'], ['TECHNICIAN', '/tech/dashboard']]) { session = { role }; await assert.rejects(home(), error => error.message === target); }
 });
 

@@ -216,6 +216,8 @@ Run `node --test scripts/ticket-operations.test.cjs` (included in `npm test`). T
 
 ## Accounts and staff onboarding (Phase 8)
 
+Google sign-in is optionally available on Login and Register. New Google users join as tenants; existing users connect the same-email Google account from Account settings after confirming their FixNest password. This never creates public Manager/Technician accounts or bypasses pending invitations. Configure the server-only OAuth credentials and exact redirect URI using [Google sign-in setup](GOOGLE-SIGN-IN.md).
+
 Public signup remains TENANT-only. Managers use `/manager/staff` to invite technicians; manager provisioning remains an operator/bootstrap action. Staff ownership records the inviting manager and only that manager may revoke/renew invitations or deactivate/reactivate the technician. Existing technicians without onboarding ownership remain globally assignable but cannot be deactivated through an arbitrary manager's account UI. Technician-property membership is unchanged and deferred.
 
 Invitation creation provisions an inactive technician with an unusable random password. Tokens contain 256 random bits; PostgreSQL stores only SHA-256 hashes, purpose, bound email/role, credential version, creator, expiry, and used/revoked timestamps. Invitations expire after 48 hours. Acceptance sets a validated password and activates the account atomically. Used/expired/revoked links fail safely; renew rotates an unused invitation and invalidates previous links. Duplicate accounts/invitations return 409. Accepted invitations cannot be renewed or reused.

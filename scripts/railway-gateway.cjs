@@ -61,7 +61,7 @@ function createGateway({ upstreamPort, origin, limiter = createLimiter() }) {
     if (!health && req.headers.host?.toLowerCase() !== publicOrigin.host.toLowerCase()) { reject(403, 'Invalid request host'); return; }
     if (req.headers.origin && req.headers.origin !== publicOrigin.origin) { reject(403, 'Invalid request origin'); return; }
     if (/^\/(?:uploads|storage|prisma|scripts|dist-ops)(?:\/|$)/.test(pathname) || /^\/\.env(?:\.|$)/.test(pathname) || pathname === '/_next/image') { reject(404, 'Not found'); return; }
-    const category = pathname === '/api/upload' ? 'upload' : /^\/api\/auth\/(?:login|register|forgot-password|reset-password|invitation)$/.test(pathname) ? 'credential' : null;
+    const category = pathname === '/api/upload' ? 'upload' : /^\/api\/auth\/(?:login|register|forgot-password|reset-password|invitation|google(?:\/callback)?)$/.test(pathname) ? 'credential' : null;
     if (category) {
       // Railway's HTTPS ingress supplies X-Real-IP. Never use client-supplied
       // X-Forwarded-For. Private service access must stay within this project.

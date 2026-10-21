@@ -13,6 +13,14 @@ test('production startup rejects missing secrets and dev configuration without r
     assert.throws(() => validateProduction({ ...valid(), ...override }), error => !error.message.includes('PRIVATE_PASSWORD'));
   }
 });
+
+test('optional Google credentials must be paired and validation never reveals them', () => {
+  const secret = randomBytes(32).toString('hex');
+  assert.equal(validateProduction({ ...valid(), GOOGLE_CLIENT_ID: 'web-client', GOOGLE_CLIENT_SECRET: secret }), true);
+  for (const override of [{ GOOGLE_CLIENT_ID: 'web-client' }, { GOOGLE_CLIENT_SECRET: secret }]) {
+    assert.throws(() => validateProduction({ ...valid(), ...override }), error => /Google OAuth/.test(error.message) && !error.message.includes(secret));
+  }
+});
 test('bootstrap validates shared password policy and never overwrites an existing account', async () => {
   require('ts-node').register({ transpileOnly: true, project: 'tsconfig.seed.json' });
   const { bootstrapManager, bootstrapSchema } = require('../prisma/bootstrap-manager.ts');

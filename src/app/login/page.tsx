@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { GoogleSignIn } from '@/components/GoogleSignIn';
 import { useRouter } from 'next/navigation';
 import { AuthFrame } from '@/components/AuthFrame';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,7 @@ export default function Login() {
 
     return (
         <AuthFrame title="Welcome back" description="Sign in to your FixNest account.">
+                    <GoogleSignIn />
                     <form aria-busy={pending} onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="login-email">Email</Label>

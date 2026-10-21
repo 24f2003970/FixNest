@@ -7,7 +7,7 @@ import { setSessionCookie } from '../auth';
 export const AuthService = {
     login: async (email: string, pass: string) => {
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user || !user.active) throw new AppError('Invalid credentials', 400);
+        if (!user || !user.active || !user.password) throw new AppError('Invalid credentials', 400);
 
         const valid = await bcrypt.compare(pass, user.password);
         if (!valid) throw new AppError('Invalid credentials', 400);

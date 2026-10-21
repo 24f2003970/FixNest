@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { GoogleSignIn } from '@/components/GoogleSignIn';
 import { useRouter } from 'next/navigation';
 import { AuthFrame } from '@/components/AuthFrame';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,7 @@ export default function Register() {
 
     return (
         <AuthFrame title="Create your tenant account" description="Create a FixNest tenant account to report maintenance issues.">
+                    <GoogleSignIn register />
                     <form aria-busy={pending} onSubmit={handleRegister} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="register-name">Name</Label>

@@ -41,7 +41,8 @@ model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
-  password  String
+  password  String?
+  googleSubject String? @unique
   role      Role
   createdAt DateTime @default(now())
   unitId String?
@@ -56,6 +57,13 @@ model User {
   notifications Notification[]
   @@index([unitId])
   @@index([onboardedById])
+}
+
+// Short-lived, single-use OAuth attempts. No provider tokens or PKCE secrets.
+model OAuthAttempt {
+  stateHash String @id
+  expiresAt DateTime
+  @@index([expiresAt])
 }
 
 enum CredentialPurpose {

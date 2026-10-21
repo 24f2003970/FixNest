@@ -20,7 +20,10 @@ const unavailable = () => new AppError('This link is invalid, expired, or unavai
 const recoveryMessage = 'If the account is eligible, a recovery request has been recorded. Check your email if delivery is available, or contact your operator for help.';
 
 export const AccountService = {
-    profile: (id: string) => prisma.user.findUniqueOrThrow({ where: { id }, select: accountSelect }),
+    profile: async (id: string) => {
+        const { password, googleSubject, ...profile } = await prisma.user.findUniqueOrThrow({ where: { id }, select: { ...accountSelect, password: true, googleSubject: true } });
+        return { ...profile, hasPassword: Boolean(password), googleConnected: Boolean(googleSubject) };
+    },
     updateProfile: (id: string, name: string) => prisma.user.update({ where: { id }, data: { name }, select: accountSelect }),
     staff: async (managerId: string) => ({
         technicians: (await prisma.user.findMany({ where: { onboardedById: managerId, role: 'TECHNICIAN' }, select: { ...accountSelect, credentialTokens: { where: { purpose: 'INVITE', usedAt: { not: null } }, select: { id: true }, take: 1 } }, orderBy: { name: 'asc' } })).map(({ credentialTokens, ...user }) => ({ ...user, invitationAccepted: credentialTokens.length > 0 })),
@@ -114,7 +117,7 @@ export const AccountService = {
             await lockStaff(db, id);
             const user = await db.user.findUniqueOrThrow({ where: { id } });
             if (!user.active || user.authVersion !== version) throw new AppError('Session expired. Sign in again.', 401);
-            if (!await bcrypt.compare(input.currentPassword, user.password)) throw new AppError('Current password is incorrect', 400);
+            if (!user.password || !await bcrypt.compare(input.currentPassword, user.password)) throw new AppError('Current password is incorrect', 400);
             await db.user.update({ where: { id }, data: { password, authVersion: { increment: 1 } } });
             await db.credentialToken.updateMany({ where: { userId: id, usedAt: null, revokedAt: null }, data: { revokedAt: new Date() } });
             await db.accountEvent.create({ data: { userId: id, actorId: id, action: 'PASSWORD_CHANGED' } });

@@ -13,6 +13,8 @@ url.hostname = '127.0.0.1';
 process.env.DATABASE_URL = url.toString();
 // Automated fixtures must never send real email, even if the shell has provider credentials.
 process.env.EMAIL_PROVIDER = '';
+process.env.GOOGLE_CLIENT_ID = '';
+process.env.GOOGLE_CLIENT_SECRET = '';
 // Production-mode fallback needs a trusted origin; never inherit a real site's origin.
 process.env.APP_ORIGIN = 'https://fixnest.example.test';
 const { PrismaClient } = req('@prisma/client');
@@ -212,6 +214,7 @@ async function main() {
   await require('./ticket-operations.integration.cjs')({db,api,base,load,tenant,manager,manager2,tech,tech2,property,property2,unit,tenantCookie,otherCookie,managerCookie,manager2Cookie,techCookie,tech2Cookie,ticket,imageUrl,legacy});
   await require('./notifications.integration.cjs')({db,api,tenant,manager,tech,tech2,property,unit,tenantCookie,otherCookie,managerCookie,manager2Cookie,techCookie});
   await require('./accounts.integration.cjs')({db,api,base,load,manager,manager2,tenantCookie,otherCookie,managerCookie,manager2Cookie,techCookie,property,unit,password});
+  await require('./google-auth.integration.cjs')({db,api,load,tenantCookie,managerCookie,techCookie});
   const latestOccupant=await db.user.findUnique({where:{id:tenant.id}});
   await api('/api/tenant-assignment',managerCookie,'PATCH',{email:email('tenant'),unitId:null,expectedVersion:latestOccupant.occupancyVersion});
   assert.equal((await api('/api/occupancy',tenantCookie)).body.unit,null);
