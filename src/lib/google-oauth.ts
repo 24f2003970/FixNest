@@ -2,6 +2,8 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createRemoteJWKSet, EncryptJWT, jwtDecrypt, jwtVerify, type JWTPayload } from 'jose';
 import { z } from 'zod';
 import { getSessionKey } from './session';
+import { appOrigin } from './app-origin';
+export { appOrigin } from './app-origin';
 
 export const GOOGLE_COOKIE = 'fixnest_google_oauth';
 export const OAUTH_TTL = 600;
@@ -13,13 +15,6 @@ export function googleConfig() {
     if (!clientId || !clientSecret) throw new Error('Google sign-in is not configured');
     const origin = appOrigin();
     return { clientId, clientSecret, origin, redirectUri: origin + '/api/auth/google/callback' };
-}
-export function appOrigin() {
-    const url = new URL(process.env.APP_ORIGIN || '');
-    const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
-    if (url.username || url.password || url.pathname !== '/' || url.search || url.hash ||
-        (url.protocol !== 'https:' && !(process.env.NODE_ENV !== 'production' && local && url.protocol === 'http:'))) throw new Error('Invalid APP_ORIGIN');
-    return url.origin;
 }
 export function googleEnabled() { try { googleConfig(); return true; } catch { return false; } }
 const attemptSchema = z.object({

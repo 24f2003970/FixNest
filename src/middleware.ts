@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getSessionKey, verifyToken } from '@/lib/session';
+import { appOrigin } from '@/lib/app-origin';
+
+function loginRedirect(req: NextRequest) {
+    try { return NextResponse.redirect(new URL('/login', appOrigin(req.nextUrl.origin))); }
+    catch { return NextResponse.json({ success: false, error: 'Application origin is not configured' }, { status: 503 }); }
+}
 
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
@@ -27,7 +33,7 @@ export async function middleware(req: NextRequest) {
         if (isApiRoute) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
-        return NextResponse.redirect(new URL('/login', req.url));
+        return loginRedirect(req);
     }
 
     let payload;
@@ -37,7 +43,7 @@ export async function middleware(req: NextRequest) {
     } catch {
         const response = isApiRoute
             ? NextResponse.json({ success: false, error: 'Invalid Token' }, { status: 401 })
-            : NextResponse.redirect(new URL('/login', req.url));
+            : loginRedirect(req);
         response.cookies.delete('session');
         return response;
     }
@@ -47,17 +53,17 @@ export async function middleware(req: NextRequest) {
     // Route-Level Role Protection
     if (path.startsWith('/manager') && role !== 'MANAGER') {
         if (isApiRoute) return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
-        return NextResponse.redirect(new URL('/login', req.url));
+        return loginRedirect(req);
     }
 
     if (path.startsWith('/tech') && role !== 'TECHNICIAN') {
         if (isApiRoute) return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
-        return NextResponse.redirect(new URL('/login', req.url));
+        return loginRedirect(req);
     }
 
     if (path.startsWith('/dashboard') && role !== 'TENANT') {
         if (isApiRoute) return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
-        return NextResponse.redirect(new URL('/login', req.url));
+        return loginRedirect(req);
     }
 
     // Add session hardening headers to prevent back-button caching

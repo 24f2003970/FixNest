@@ -60,6 +60,12 @@ async function main() {
   let serverError='';server.stderr.on('data',b=>{serverError+=b.toString()});server.stdout.on('data',()=>{});
   let ready=false;for(let i=0;i<60;i++){try{const r=await fetch(base+'/login');if(r.status===200){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,500));}assert.ok(ready,'Server startup failed');
   assert.equal((await fetch(base+'/api/health')).status,200);
+  for (const route of ['/account', '/manager/dashboard', '/tech/dashboard', '/dashboard']) {
+    const response=await fetch(base+route,{redirect:'manual'});
+    assert.equal(response.status,307);
+    assert.equal(response.headers.get('location'),process.env.APP_ORIGIN+'/login');
+  }
+  console.log('PASS: protected-page redirects retain the configured public origin instead of the internal listener');
   assert.equal((await fetch(base+'/api/tickets',{headers:{'x-middleware-subrequest':'middleware:middleware:middleware:middleware:middleware'}})).status,401);
   const email=role=>`integration.${runId}.${role}@example.test`;
   const tenant=(await api('/api/auth/register','','POST',{name:'Integration Tenant',email:email('tenant'),password},201)).body;

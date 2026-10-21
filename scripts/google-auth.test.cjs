@@ -148,3 +148,22 @@ test('account profile exposes only sign-in flags, never password hashes or Googl
     const {AccountService}=load('src/lib/services/AccountService.ts',{'../prisma':{prisma:{user:{findUniqueOrThrow:async()=>({id:'id',password:'private-hash',googleSubject:'private-provider-subject'})}}}});
     assert.deepEqual(await AccountService.profile('id'),{id:'id',hasPassword:true,googleConnected:true});
 });
+
+test('protected-page redirects use the configured public origin behind Railway, for missing/invalid/wrong-role sessions', async () => {
+    const restore=env(); try {
+        process.env.NODE_ENV='production'; process.env.APP_ORIGIN='https://fixnest.example.test';
+        const {NextRequest}=require('next/server'); let payload=null;
+        const {middleware}=load('src/middleware.ts',{'@/lib/session':{getSessionKey:()=>new Uint8Array(32),verifyToken:async()=>payload}});
+        const request=(path,cookie)=>new NextRequest('https://localhost:33469'+path,{headers:{host:'attacker.example','x-forwarded-host':'attacker.example',...(cookie?{cookie:'session=test'}:{})}});
+        for (const path of ['/account','/manager/dashboard','/dashboard','/tech/dashboard']) {
+            for (const cookie of [false,true]) {
+                const response=await middleware(request(path,cookie)); assert.equal(response.status,307); assert.equal(response.headers.get('location'),'https://fixnest.example.test/login');
+            }
+        }
+        for (const [path,role] of [['/manager/dashboard','TENANT'],['/tech/dashboard','MANAGER'],['/dashboard','TECHNICIAN']]) {
+            payload={role}; assert.equal((await middleware(request(path,true))).headers.get('location'),'https://fixnest.example.test/login');
+        }
+        delete process.env.APP_ORIGIN; assert.equal((await middleware(request('/account',false))).status,503);
+        process.env.NODE_ENV='development'; assert.equal((await middleware(new NextRequest('http://localhost:3117/account'))).headers.get('location'),'http://localhost:3117/login');
+    } finally {restore();}
+});
